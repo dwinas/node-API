@@ -1,4 +1,6 @@
 
+require('./config/config')
+
 const express = require('express')
 const bodyParser = require('body-parser')
 
@@ -8,7 +10,7 @@ const {mongoose} = require('./db/mongoose')
 const {User} = require('./models/user')
 const {Card} = require('./models/card')
 
-//const port = process.env.PORT || 3000
+const port = process.env.PORT
 
 const app = express()
 
@@ -33,7 +35,7 @@ app.post('/card',(req, res) =>{
 })
 
 
-app.listen(3000)
+app.listen(port)
 
 
 module.exports = {app}
