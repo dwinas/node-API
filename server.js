@@ -12,7 +12,6 @@ const {Card} = require('./models/card')
 
 const app = express()
 
-
 app.use(bodyParser.json())
 
 // Korteliu kurimas
@@ -28,12 +27,16 @@ app.post('/card',(req, res) =>{
 
         res.send(doc)
     }, (err) => {
-        res.send(err)
+        res.status(400).send(err)
     })
 
 })
 
 
 app.listen(3000)
+
+
+module.exports = {app}
+
 
 
