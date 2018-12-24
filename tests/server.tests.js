@@ -133,3 +133,64 @@ describe('GET/cards/:id', ()=> {
     })
     
 })
+
+
+describe('DELETE/cards', () =>{
+
+it('Should delete all data in db', (done) =>{
+
+    test(app)
+    .delete('/cards')
+    .expect(200)
+    .end((err, res) =>{
+
+        if(err) {
+            return done(err)
+        }
+        Card.find().then((cards)=>{
+            expect(cards.length).toBe(0)
+            done()
+        }).catch((e) =>done(e))
+    })
+})
+
+
+it('Should delete selected card from database', (done) =>{
+
+    const hexid = cards[0]._id.toHexString()
+
+    test(app)
+    .delete(`/cards/${hexid}`)
+    .expect(200)
+    .expect((res)=>{
+        expect(res.body.card._id).toBe(hexid)
+    })
+    .end((err, res) =>{
+
+        if (err) {
+            return done(err)
+        }
+
+        Card.findById(hexid).then((card) =>{
+            expect(card).toBeFalsy()
+            done()
+        }).catch((e) => done(e))
+    })
+})
+it('Should return 404 if id is not valid', (done)=>{
+
+    test(app)
+    .delete('/cards/52502')
+    .expect(404)
+    .end(done)
+})
+
+it('Should return 404 if id dose not exist', (done)=>{
+
+    const id = new ObjectID().toHexString()
+    test(app)
+    .delete(`/cards/${id}`)
+    .expect(404)
+    .end(done)
+})
+})

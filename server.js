@@ -56,6 +56,37 @@ app.get('/cards/:id', (req, res) =>{
     })
 })
 
+//Deleting cards
+
+app.delete('/cards', (req, res) =>{
+
+    Card.deleteMany({}).then((doc)=>{
+
+        res.send(doc)
+    }, (err)=> {
+        res.status(400).send()
+    })
+})
+
+
+app.delete('/cards/:id', (req, res) =>{
+
+    const id = req.params.id
+
+    if(!ObjectID.isValid(id)) {
+        return res.status(404).send()
+    }
+    Card.findByIdAndDelete(id).then((card)=>{
+        if(!card){
+            return res.status(404).send()
+        }
+        res.send({card})
+    }, (err) =>{
+        res.status(400).send()
+    })
+})
+
+
 
 app.listen(port, ()=>{
 
