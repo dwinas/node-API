@@ -6,9 +6,23 @@ const {app} = require('./../server')
 const {Card} = require('./../models/card')
 
 
+const cards = [{
+    question:'question1',
+    answer: 'answer1'
+},{
+    question: 'question2',
+    answer: 'answer2'
+}]
+
+
 beforeEach((done) => {
 
-    Card.deleteMany({}).then (() =>done())
+    Card.deleteMany({}).then (() =>{
+
+        return Card.insertMany(cards)
+    }).then(() => done())
+    
+ 
 })
 
 
@@ -21,7 +35,7 @@ describe('POST/cards', () => {
         const answer = 'answer'
 
         test(app)
-        .post('/card')
+        .post('/cards')
         .send({question, answer})
         .expect(200)
         
@@ -35,7 +49,7 @@ describe('POST/cards', () => {
 
                 return done(err)
             }
-            Card.find().then((cards) => {
+            Card.find({question, answer}).then((cards) => {
 
                 expect(cards.length).toBe(1)
                 expect(cards[0].question).toBe(question)
@@ -49,7 +63,7 @@ describe('POST/cards', () => {
     it('Should not create card with invalid request', (done) =>{
 
         test(app)
-        .post('/card')
+        .post('/cards')
         .send({})
         .expect(400)
         .end((err, res) => {
@@ -58,9 +72,28 @@ describe('POST/cards', () => {
             }
 
             Card.find().then((cards) => {
-                expect(cards.length).toBe(0)
+                expect(cards.length).toBe(2)
                 done()
             }).catch((e) => done(e))
         })
+    })
+})
+
+describe('GET /cards', ()=> {
+
+    it('Should get all cards', (done)=>{
+
+        test(app)
+        .get('/cards')
+        .expect(200)
+        .end((err, res) => {
+
+            if (err) {
+                return done(err)
+            }
+            expect(res.body.cards.length).toBe(2)
+            done()
+        })
+        
     })
 })
