@@ -1,15 +1,16 @@
 const expect = require('expect')
-
+const {ObjectID} = require('mongodb')
 const test = require('supertest')
-
 const {app} = require('./../server')
 const {Card} = require('./../models/card')
 
 
 const cards = [{
+    _id: new ObjectID,
     question:'question1',
     answer: 'answer1'
 },{
+    _id: new ObjectID,
     question: 'question2',
     answer: 'answer2'
 }]
@@ -96,4 +97,39 @@ describe('GET /cards', ()=> {
         })
         
     })
+})
+
+describe('GET/cards/:id', ()=> {
+
+    it('should return card doc', (done) =>{
+
+        const id = cards[0]._id.toHexString()
+        test(app)
+        .get(`/cards/${id}`)
+        .expect(200)
+        .expect((res) =>{
+
+            expect(res.body.card.question).toBe(cards[0].question)
+            expect(res.body.card.answer).toBe(cards[0].answer)
+        })
+        .end(done)
+    })
+
+    it('should return 404 when ID is not found', (done) =>{
+
+        const id = new ObjectID().toHexString()
+        test(app)
+        .get(`/cards/${id}`)
+        .expect(404)
+        .end(done)
+    })
+
+    it('Should return 404 when ID is invalid', (done) => {
+
+        test(app)
+        .get('/cards/4345gfhhfd')
+        .expect(404)
+        .end(done)
+    })
+    
 })
