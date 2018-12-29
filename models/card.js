@@ -23,9 +23,9 @@ const Card = mongoose.model('Card', {
         default: false
     },
 
-    completedAt: {
+    lastActionAt: {
         type: Number,
-        defaul: null
+        defaul: new Date().getTime()
     },
 
     section:{
